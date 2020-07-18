@@ -2,14 +2,17 @@ const express = require("express");
 const bodyPraser = require("body-parser");
 
 const Promo = require("../models/promotions");
-
+const cors = require("./cors");
 const promotionRouter = express.Router();
 
 promotionRouter.use(bodyPraser.json());
 
 promotionRouter
   .route("/")
-  .get((req, res, next) => {
+  .options(cors.corsWithOptions, (req, res) => {
+    res.sendStatus(200);
+  })
+  .get(cors.cors, (req, res, next) => {
     Promo.find({})
       .then(
         (Promo) => {
@@ -21,7 +24,7 @@ promotionRouter
       )
       .catch((err) => next(err));
   })
-  .post((req, res, next) => {
+  .post(cors.corsWithOptions, (req, res, next) => {
     Promo.create(req.body)
       .then(
         (promo) => {
@@ -34,7 +37,7 @@ promotionRouter
       )
       .catch((err) => next(err));
   })
-  .put((req, res, next) => {
+  .put(cors.corsWithOptions, (req, res, next) => {
     res.statusCode = 403;
     res.end("PUT operation not supported on /Promotions");
   })
@@ -53,7 +56,10 @@ promotionRouter
 
 promotionRouter
   .route("/:promotionsId")
-  .get((req, res, next) => {
+  .options(cors.corsWithOptions, (req, res) => {
+    res.sendStatus(200);
+  })
+  .get(cors.cors, (req, res, next) => {
     Promo.findById(req.params.promotionsId)
       .then(
         (promo) => {
@@ -65,13 +71,13 @@ promotionRouter
       )
       .catch((err) => next(err));
   })
-  .post((req, res, next) => {
+  .post(cors.corsWithOptions, (req, res, next) => {
     res.statusCode = 403;
     res.end(
       "POST operation not supported on /Promotions/" + req.params.promotionsId
     );
   })
-  .put((req, res, next) => {
+  .put(cors.corsWithOptions, (req, res, next) => {
     Promo.findByIdAndUpdate(
       req.params.promotionsId,
       {
@@ -89,7 +95,7 @@ promotionRouter
       )
       .catch((err) => next(err));
   })
-  .delete((req, res, next) => {
+  .delete(cors.corsWithOptions, (req, res, next) => {
     Promo.findByIdAndRemove(req.params.promotionsId)
       .then(
         (resp) => {
