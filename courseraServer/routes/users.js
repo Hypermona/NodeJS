@@ -8,7 +8,22 @@ var authenticate = require("../authenticate");
 router.use(bodyParser.json());
 
 /* GET users listing. */
-
+router.get(
+  "/",
+  authenticate.verifyUser,
+  authenticate.verifyAdmin,
+  (req, res, next) => {
+    User.find({}, (err, users) => {
+      if (err) {
+        return next(err);
+      } else {
+        res.statusCode = 200;
+        res.setHeader("Content_type", "application/json");
+        res.json(users);
+      }
+    });
+  }
+);
 router.post("/signup", (req, res, next) => {
   User.register(
     new User({ username: req.body.username }),
